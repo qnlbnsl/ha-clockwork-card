@@ -21,7 +21,7 @@ class ClockWorkCard extends HTMLElement {
 
         // Need to check for safari as safari dates are parsed as being UTC when not specified.
         // Therefore all dates are adjusted
-        //var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         if (entityId) {
             const state = hass.states[entityId];
@@ -29,12 +29,12 @@ class ClockWorkCard extends HTMLElement {
             if (stateStr == "Unavailable") {
                 throw new Error("Sensor State Unavailable");
             }
-            // if (isSafari) {
-            //     var _stateStr_utc = new Date(stateStr).toLocaleString(locale, {timeZone: "Etc/UTC"});
-            //     var _date_time = new Date(_stateStr_utc);
-            // } else {
-            //     var _date_time = new Date(stateStr);
-            // }
+            if (isSafari) {
+                var _stateStr_utc = new Date(stateStr).toLocaleString(locale, {timeZone: "Etc/UTC"});
+                var _date_time = new Date(_stateStr_utc);
+            } else {
+                var _date_time = new Date(stateStr);
+            }
             var _date_time = new Date(stateStr);
         } else {
             var _date_time = new Date();
