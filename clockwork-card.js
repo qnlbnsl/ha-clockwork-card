@@ -1,7 +1,7 @@
 // Clockwork Card
 // https://github.com/robmarkoski/ha-clockwork-card
 
-class ClockWorkCard extends HTMLElement {
+class ClockWorkCardCustom extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({
@@ -15,8 +15,10 @@ class ClockWorkCard extends HTMLElement {
         const config = this.config;
         const locale = config.locale;
         const _locale = locale ? locale : undefined;
-        var _other_timezones = config.other_time;
-        
+        var _other_timezones = null
+        if (config.other_time) {
+            _other_timezones = config.other_time;
+        }
         const entityId = config.entity;
 
         // Need to check for safari as safari dates are parsed as being UTC when not specified.
@@ -65,27 +67,25 @@ class ClockWorkCard extends HTMLElement {
         var otherclocks = `
             <div class = "other_clocks">
             `;
-        var i;
-        var j = _other_timezones.length; //TODO: Recommend max 3.
-        for (i= 0; i < j; i++) {
-            //Format other timezones.
-            var _tztime = _date_time.toLocaleTimeString(_locale, {
-                hour: 'numeric',
-                minute: 'numeric',
-                timeZone: _other_timezones[i],
-                weekday: 'short'
-            }); 
-            
-            // List other Timezones.
-            otherclocks = otherclocks + `
-                <div class="tz_locale">${_other_timezones[i]} </div> 
-                <div class="otime"> ${_tztime} </div>
-            `;
-            //console.log(_tztime);
-        };
-        otherclocks = otherclocks + `
-            </div>
-            `;
+        if (_other_timezones) {
+            var j = _other_timezones?.length; //TODO: Recommend max 3.
+            for (let i= 0; i < j; i++) {
+                //Format other timezones.
+                var _tztime = _date_time.toLocaleTimeString(_locale, {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    timeZone: _other_timezones[i],
+                    weekday: 'short'
+                }); 
+                
+                // List other Timezones.
+                otherclocks = otherclocks + `
+                    <div class="tz_locale">${_other_timezones[i]} </div> 
+                    <div class="otime"> ${_tztime} </div>
+                `;
+                //console.log(_tztime);
+            };
+        }
         /*console.log(otherclocks);*/
 
         // Build Current Local Time
@@ -96,7 +96,7 @@ class ClockWorkCard extends HTMLElement {
             </div>
         `;
         
-        var clock_contents = local_time + otherclocks;
+        var clock_contents = _other_timezones ? local_time + otherclocks : local_time;
        /* console.log("Clock Contents: " + clock_contents);*/
         
        this.shadowRoot.getElementById('container').innerHTML = clock_contents;
@@ -187,4 +187,4 @@ class ClockWorkCard extends HTMLElement {
     }
 }
   
-customElements.define('clockwork-card', ClockWorkCard);
+customElements.define('clockwork-card-custom', ClockWorkCardCustom);
